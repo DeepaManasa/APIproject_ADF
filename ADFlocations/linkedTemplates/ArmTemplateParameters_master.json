@@ -1,0 +1,48 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "ADFlocations"
+		},
+		"ls_dailydelta_accessToken": {
+			"value": ""
+		},
+		"ls_sink_Brampton_accountKey": {
+			"value": ""
+		},
+		"ls_sink_Missisuaga_accountKey": {
+			"value": ""
+		},
+		"ls_sink_Toronto_accountKey": {
+			"value": ""
+		},
+		"ls_dailydelta_properties_typeProperties_existingClusterId": {
+			"value": "0114-015017-c9jzw78x"
+		},
+		"ls_sink_Brampton_properties_typeProperties_url": {
+			"value": "https://ingestion9.dfs.core.windows.net/"
+		},
+		"ls_sink_Missisuaga_properties_typeProperties_url": {
+			"value": "https://ingestion9.dfs.core.windows.net/"
+		},
+		"ls_sink_Toronto_properties_typeProperties_url": {
+			"value": "https://ingestion9.dfs.core.windows.net/"
+		},
+		"ls_srclocations_Brampton_properties_typeProperties_url": {
+			"value": "https://api.openaq.org/v3/locations/1274941"
+		},
+		"ls_srclocations_Missisuaga_properties_typeProperties_url": {
+			"value": "https://api.openaq.org/v3/locations/1365268"
+		},
+		"ls_srclocations_Toronto_properties_typeProperties_url": {
+			"value": "https://api.openaq.org/v3/locations/7570"
+		},
+		"containerUri": {
+			"value": ""
+		},
+		"containerSasToken": {
+			"value": ""
+		}
+	}
+}

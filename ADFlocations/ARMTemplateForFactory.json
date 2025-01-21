@@ -1,0 +1,475 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "ADFlocations"
+		},
+		"ls_dailydelta_accessToken": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accessToken' of 'ls_dailydelta'"
+		},
+		"ls_sink_Brampton_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'ls_sink_Brampton'"
+		},
+		"ls_sink_Missisuaga_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'ls_sink_Missisuaga'"
+		},
+		"ls_sink_Toronto_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'ls_sink_Toronto'"
+		},
+		"ls_dailydelta_properties_typeProperties_existingClusterId": {
+			"type": "string",
+			"defaultValue": "0114-015017-c9jzw78x"
+		},
+		"ls_sink_Brampton_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://ingestion9.dfs.core.windows.net/"
+		},
+		"ls_sink_Missisuaga_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://ingestion9.dfs.core.windows.net/"
+		},
+		"ls_sink_Toronto_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://ingestion9.dfs.core.windows.net/"
+		},
+		"ls_srclocations_Brampton_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://api.openaq.org/v3/locations/1274941"
+		},
+		"ls_srclocations_Missisuaga_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://api.openaq.org/v3/locations/1365268"
+		},
+		"ls_srclocations_Toronto_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://api.openaq.org/v3/locations/7570"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/dailydelta')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Toronto",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "RestSource",
+								"httpRequestTimeout": "00:01:40",
+								"requestInterval": "00.00:00:00.010",
+								"requestMethod": "GET",
+								"additionalHeaders": {
+									"X-API-Key": "afb47d8e623f85636c5f1dac39ccd550e0e59f9775d69fb5116fed2f5f99626e"
+								},
+								"paginationRules": {
+									"supportRFC5988": "true"
+								}
+							},
+							"sink": {
+								"type": "JsonSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings",
+									"copyBehavior": "MergeFiles"
+								},
+								"formatSettings": {
+									"type": "JsonWriteSettings",
+									"filePattern": "arrayOfObjects"
+								}
+							},
+							"enableStaging": false
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_srclocations_Toronto",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_sink_airpollutants",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "Brampton",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "Toronto",
+								"dependencyConditions": [
+									"Completed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "RestSource",
+								"httpRequestTimeout": "00:01:40",
+								"requestInterval": "00.00:00:00.010",
+								"requestMethod": "GET",
+								"additionalHeaders": {
+									"X-API-Key": "afb47d8e623f85636c5f1dac39ccd550e0e59f9775d69fb5116fed2f5f99626e"
+								},
+								"paginationRules": {
+									"supportRFC5988": "true"
+								}
+							},
+							"sink": {
+								"type": "JsonSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings",
+									"copyBehavior": "MergeFiles"
+								},
+								"formatSettings": {
+									"type": "JsonWriteSettings",
+									"filePattern": "arrayOfObjects"
+								}
+							},
+							"enableStaging": false
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_srclocations_Brampton",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_sink_airpollutants",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "Missisuaga",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "Brampton",
+								"dependencyConditions": [
+									"Completed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "RestSource",
+								"httpRequestTimeout": "00:01:40",
+								"requestInterval": "00.00:00:00.010",
+								"requestMethod": "GET",
+								"additionalHeaders": {
+									"X-API-Key": "afb47d8e623f85636c5f1dac39ccd550e0e59f9775d69fb5116fed2f5f99626e"
+								},
+								"paginationRules": {
+									"supportRFC5988": "true"
+								}
+							},
+							"sink": {
+								"type": "JsonSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings",
+									"copyBehavior": "MergeFiles"
+								},
+								"formatSettings": {
+									"type": "JsonWriteSettings",
+									"filePattern": "arrayOfObjects"
+								}
+							},
+							"enableStaging": false
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_srclocations_Missisuaga",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_sink_airpollutants",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "dailydelta",
+						"type": "DatabricksNotebook",
+						"dependsOn": [
+							{
+								"activity": "Missisuaga",
+								"dependencyConditions": [
+									"Completed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/Users/deepamanasa909@outlook.com/dailydelta"
+						},
+						"linkedServiceName": {
+							"referenceName": "ls_dailydelta",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_srclocations_Toronto')]",
+				"[concat(variables('factoryId'), '/datasets/ds_sink_airpollutants')]",
+				"[concat(variables('factoryId'), '/datasets/ds_srclocations_Brampton')]",
+				"[concat(variables('factoryId'), '/datasets/ds_srclocations_Missisuaga')]",
+				"[concat(variables('factoryId'), '/linkedServices/ls_dailydelta')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_sink_airpollutants')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_sink_Toronto",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@concat(utcNow(),'.json')",
+							"type": "Expression"
+						},
+						"fileSystem": "raw"
+					}
+				},
+				"schema": {}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_sink_Toronto')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_srclocations_Brampton')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_srclocations_Brampton",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "RestResource",
+				"typeProperties": {},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_srclocations_Brampton')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_srclocations_Missisuaga')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_srclocations_Missisuaga",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "RestResource",
+				"typeProperties": {},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_srclocations_Missisuaga')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_srclocations_Toronto')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_srclocations_Toronto",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "RestResource",
+				"typeProperties": {},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_srclocations_Toronto')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ls_dailydelta')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureDatabricks",
+				"typeProperties": {
+					"domain": "https://adb-938647729154694.14.azuredatabricks.net",
+					"accessToken": {
+						"type": "SecureString",
+						"value": "[parameters('ls_dailydelta_accessToken')]"
+					},
+					"existingClusterId": "[parameters('ls_dailydelta_properties_typeProperties_existingClusterId')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ls_sink_Brampton')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('ls_sink_Brampton_properties_typeProperties_url')]",
+					"accountKey": {
+						"type": "SecureString",
+						"value": "[parameters('ls_sink_Brampton_accountKey')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ls_sink_Missisuaga')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('ls_sink_Missisuaga_properties_typeProperties_url')]",
+					"accountKey": {
+						"type": "SecureString",
+						"value": "[parameters('ls_sink_Missisuaga_accountKey')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ls_sink_Toronto')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('ls_sink_Toronto_properties_typeProperties_url')]",
+					"accountKey": {
+						"type": "SecureString",
+						"value": "[parameters('ls_sink_Toronto_accountKey')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ls_srclocations_Brampton')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "RestService",
+				"typeProperties": {
+					"url": "[parameters('ls_srclocations_Brampton_properties_typeProperties_url')]",
+					"enableServerCertificateValidation": true,
+					"authenticationType": "Anonymous"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ls_srclocations_Missisuaga')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "RestService",
+				"typeProperties": {
+					"url": "[parameters('ls_srclocations_Missisuaga_properties_typeProperties_url')]",
+					"enableServerCertificateValidation": true,
+					"authenticationType": "Anonymous"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ls_srclocations_Toronto')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "RestService",
+				"typeProperties": {
+					"url": "[parameters('ls_srclocations_Toronto_properties_typeProperties_url')]",
+					"enableServerCertificateValidation": true,
+					"authenticationType": "Anonymous"
+				}
+			},
+			"dependsOn": []
+		}
+	]
+}
