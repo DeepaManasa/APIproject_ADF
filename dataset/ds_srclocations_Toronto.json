@@ -1,0 +1,12 @@
+{
+	"name": "ds_srclocations_Toronto",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_srclocations_Toronto",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "RestResource",
+		"schema": []
+	}
+}

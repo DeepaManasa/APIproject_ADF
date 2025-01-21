@@ -1,0 +1,12 @@
+{
+	"name": "ds_srclocations_Brampton",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_srclocations_Brampton",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "RestResource",
+		"schema": []
+	}
+}
