@@ -1,0 +1,12 @@
+{
+	"name": "ds_srclocations_Missisuaga",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_srclocations_Missisuaga",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "RestResource",
+		"schema": []
+	}
+}
